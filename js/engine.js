@@ -23,7 +23,9 @@ var Engine = (function(global) {
         win = global.window,
         canvas = doc.createElement('canvas'),
         ctx = canvas.getContext('2d'),
-        lastTime;
+        lastTime,
+    /**added to keep track of total score over multiple ticks*/
+        score;
 
     canvas.width = 505;
     canvas.height = 606;
@@ -53,10 +55,50 @@ var Engine = (function(global) {
          */
         lastTime = now;
 
+        /**Place the Player back at the initial position if the player has
+           reached the water or collides with an enemy. These statements
+           are kept separate from the update function so that Player is
+           rendered on the water block before it is sent back to the initial
+           position. Originally had variables crossed and collision for
+           these scenarios for readability, but decided not to introduce new
+           variables for the code is simple enough. */
+
+         if (player.y == -10) {
+           player.update(1);
+           updateScore(0,1);
+         } else {
+           // checkCollisions();
+           allEnemies.forEach(function(enemy) {
+               if ((enemy.x > player.x - 50 && enemy.x < player.x + 50) && (enemy.y > player.y - 41 && enemy.y < player.y + 41)) {
+                 player.update(1);
+                 updateScore(1,0);
+               }
+            });
+          }
+
+          displayScore(score);
+
+        /**If player's score reaches 1000, animation frame is cancelled and
+           the text "YOU WIN!" appears. The message after displayScore(score)
+           so that the score is updated to show a value >=1000 before the
+           message appers.*/
+
+          if (score >= 1000) {
+            win.cancelAnimationFrame(main);
+            ctx.font = '60pt Impact';
+            ctx.textAlign = 'center';
+            ctx.fillStyle = 'yellow';
+            ctx.fillText ('YOU WIN!', canvas.width/2, canvas.height/2);
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = 2;
+            ctx.strokeText ('YOU WIN!', canvas.width/2, canvas.height/2);
+           } else {
+
         /* Use the browser's requestAnimationFrame function to call this
          * function again as soon as the browser is able to draw another frame.
          */
-        win.requestAnimationFrame(main);
+          win.requestAnimationFrame(main);
+        }
     }
 
     /* This function does some initial setup that should only occur once,
@@ -80,7 +122,16 @@ var Engine = (function(global) {
      */
     function update(dt) {
         updateEntities(dt);
-        // checkCollisions();
+        /**Delete enemies that are off canvas and add a new Enemy
+           in its place to keep total number of enemies constant (4 in current
+           setting)*/
+        var validEnemies = allEnemies.filter(function(enemy){
+          return enemy.x <= 600;
+        });
+        allEnemies = validEnemies.slice(0);
+        while (allEnemies.length < 4) {
+          allEnemies.push(new Enemy());
+        }
     }
 
     /* This is called by the update function and loops through all of the
@@ -91,10 +142,10 @@ var Engine = (function(global) {
      * render methods.
      */
     function updateEntities(dt) {
-        allEnemies.forEach(function(enemy) {
-            enemy.update(dt);
+        allEnemies.forEach(function(enemy, index) {
+          enemy.update(dt);
         });
-        player.update();
+        player.update(0);
     }
 
     /* This function initially draws the "game level", it will then call
@@ -135,7 +186,6 @@ var Engine = (function(global) {
                 ctx.drawImage(Resources.get(rowImages[row]), col * 101, row * 83);
             }
         }
-
         renderEntities();
     }
 
@@ -150,7 +200,6 @@ var Engine = (function(global) {
         allEnemies.forEach(function(enemy) {
             enemy.render();
         });
-
         player.render();
     }
 
@@ -160,6 +209,27 @@ var Engine = (function(global) {
      */
     function reset() {
         // noop
+        score = 0;
+    }
+
+    /**Update score when Player reaches the water (+100) and Player collides
+       with an Enemy (-50)*/
+
+    function updateScore(collision, crossed) {
+      if (crossed == 1) {
+       score = score + 100;
+      } else if (collision == 1) {
+       score = score - 50;
+      }
+    }
+
+    function displayScore(score) {
+      ctx.font = '16pt Impact';
+      ctx.fillStyle = 'white';
+      ctx.fillText ('Score: '+score, 20, 90);
+      ctx.strokeStyle = 'black';
+      ctx.lineWidth = 2;
+      ctx.strokeText ('Score: '+score, 20, 90);
     }
 
     /* Go ahead and load all of the images we know we're going to need to

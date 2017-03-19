@@ -1,6 +1,24 @@
-frontend-nanodegree-arcade-game
+# Frogger Clone Game
 ===============================
 
-Students should use this [rubric](https://review.udacity.com/#!/projects/2696458597/rubric) for self-checking their submission. Make sure the functions you write are **object-oriented** - either class functions (like Player and Enemy) or class prototype functions such as Enemy.prototype.checkCollisions, and that the keyword 'this' is used appropriately within your class and class prototype functions to refer to the object the function is called upon. Also be sure that the **readme.md** file is updated with your instructions on both how to 1. Run and 2. Play your arcade game.
+This game is a clone of a classic Frogger game. The goal of the game is to have the Player cross the roads to reach the water without being hit by any of the Enemies curising on the roads.
 
-For detailed instructions on how to get started, check out this [guide](https://docs.google.com/document/d/1v01aScPjSWCCWQLIpFqvg3-vXLH2e8_SZQKC8jNO0Dc/pub?embedded=true).
+## How to Run the Game
+
+Save all files in the Frogger Clone Game Folder without changing the structure of the directory. Included in the Frogger Clone Game Folder are the following files and folders.
+
+- index.html
+- css folder (contains style.css)
+- images folder (contains images used in the game)
+- js folder (contains app.js, engine.js, and resources.js)
+- README.md (this file)
+
+Opening index.html in a browser will automatically launch the game.
+
+## How to Play
+
+Open index.html in a browser to start the game.
+
+You control the Player character who is initially positioned in the center column of the last row. Move the Player using the up/down/left/right arrow keys to cross the roads and reach the water on the other side. You win the game when you reach the water. If you get hit by one or more of the Enemies (bugs) on the roads, the Player is returned to the initial position.
+
+To play a new game after reaching the water, refresh the page. To quit, simply close the window/tab.
